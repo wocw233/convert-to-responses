@@ -84,7 +84,17 @@ API Path: /v1/responses
 
 ### 配合 Codex 使用
 
-如果使用 Codex 客户端，需要通过 `ccswitch` 注入自定义 API 端点，将 Codex 的请求转发到本服务。
+如果使用 Codex 客户端，需要通过 **CCSwitch** 注入自定义 API 端点，将 Codex 的请求转发到本服务。
+
+#### 配置 CCSwitch
+
+CCSwitch 桌面应用中，API 地址填写：
+
+```
+http://127.0.0.1:11435/v1
+```
+
+CCSwitch 会引导 Codex 客户端将请求发送到本地代理。
 
 ## API 端点
 
