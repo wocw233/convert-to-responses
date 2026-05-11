@@ -82,6 +82,10 @@ Base URL: http://127.0.0.1:11435
 API Path: /v1/responses
 ```
 
+### 配合 Codex 使用
+
+如果使用 Codex 客户端，需要通过 `ccswitch` 注入自定义 API 端点，将 Codex 的请求转发到本服务。
+
 ## API 端点
 
 ### 代理端点
