@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convert to responses — Provider Gateway</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="grid-bg"></div>
+<div class="scanlines"></div>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-line1" data-i18n="brand.line1">Convert to</div>
+      <div class="brand-line2" data-i18n="brand.line2">responses</div>
+      <div class="brand-version">v1.0.0</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-link active" data-page="providers">
+        <span class="nav-glyph">&#9671;</span>
+        <span class="nav-label" data-i18n="nav.providers">服务商</span>
+        <span class="nav-badge" id="providerCount">0</span>
+      </a>
+      <a class="nav-link" data-page="info">
+        <span class="nav-glyph">&#9672;</span>
+        <span class="nav-label" data-i18n="nav.info">信息</span>
+      </a>
+      <a class="nav-link" data-page="logs">
+        <span class="nav-glyph">&#9673;</span>
+        <span class="nav-label" data-i18n="nav.logs">日志</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="lang-row">
+        <button class="lang-btn" id="btnLangZh" data-lang="zh">中</button>
+        <span class="lang-sep">/</span>
+        <button class="lang-btn active" id="btnLangEn" data-lang="en">EN</button>
+      </div>
+      <div class="sidebar-status">
+        <div class="status-row">
+          <span class="status-dot online" id="statusDot"></span>
+          <span class="status-label" id="statusText" data-i18n="status.online">在线</span>
+        </div>
+        <div class="active-mini" id="activeMini"></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <section class="page active" id="page-providers">
+      <div class="page-top">
+        <h1 class="page-heading" data-i18n="providers.title">服务商管理</h1>
+        <div class="page-actions">
+          <button class="btn btn-primary" id="btnAddProvider">
+            <span class="btn-icon">+</span> <span data-i18n="providers.add">添加服务商</span>
+          </button>
+          <button class="btn btn-ghost" id="btnRefresh">
+            <span data-i18n="providers.refresh">刷新</span>
+          </button>
+        </div>
+      </div>
+      <div class="providers-grid" id="providersGrid"></div>
+      <div class="empty-panel" id="emptyState">
+        <div class="empty-glyph">[ ]</div>
+        <div class="empty-text" data-i18n="providers.empty">尚未配置服务商</div>
+        <button class="btn btn-primary" id="btnEmptyAdd">
+          <span class="btn-icon">+</span> <span data-i18n="providers.empty_add">添加第一个服务商</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="page" id="page-info">
+      <div class="page-top">
+        <h1 class="page-heading" data-i18n="info.title">系统信息</h1>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-title">
+            <span class="glyph">&#9672;</span> <span data-i18n="info.translation_title">API 转译</span>
+          </div>
+          <p data-i18n="info.translation_desc">本网关在多个 AI 服务商 API 之间进行转译，输出 OpenAI Responses API 格式，供 Codex CLI / 桌面端使用。</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">
+            <span class="glyph">&#9672;</span> <span data-i18n="info.providers_title">支持的服务商</span>
+          </div>
+          <ul>
+            <li data-i18n="info.providers_1">Anthropic Messages API</li>
+            <li data-i18n="info.providers_2">OpenAI Chat Completions API</li>
+            <li data-i18n="info.providers_3">OpenAI Responses API（直通）</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">
+            <span class="glyph">&#9672;</span> <span data-i18n="info.endpoints_title">接口端点</span>
+          </div>
+          <table class="info-table">
+            <tr><th data-i18n="info.endpoints_path">路径</th><th data-i18n="info.endpoints_desc">说明</th></tr>
+            <tr><td>POST /v1/responses</td><td data-i18n="info.endpoints_1">转译后的 Responses API</td></tr>
+            <tr><td>GET /api/providers</td><td data-i18n="info.endpoints_2">列出所有服务商</td></tr>
+            <tr><td>POST /api/providers/:id/activate</td><td data-i18n="info.endpoints_3">激活服务商</td></tr>
+            <tr><td>GET /api/providers/:id/test</td><td data-i18n="info.endpoints_4">测试连接</td></tr>
+          </table>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">
+            <span class="glyph">&#9672;</span> <span data-i18n="info.usage_title">使用方法</span>
+          </div>
+          <p data-i18n="info.usage_desc">在服务商管理中添加 API 密钥、接口地址和模型。一次只激活一个服务商。向 /v1/responses 发送请求 — 网关会自动路由到活动服务商并转译响应格式。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-logs">
+      <div class="page-top">
+        <h1 class="page-heading" data-i18n="logs.title">终端日志</h1>
+        <div class="page-actions">
+          <button class="btn btn-ghost" id="btnLogClear"><span data-i18n="logs.clear">清空</span></button>
+        </div>
+      </div>
+      <div class="terminal-shell">
+        <div class="terminal-toolbar">
+          <div class="terminal-filter" id="logFilters">
+            <button class="filter-chip on" data-level="all">ALL</button>
+            <button class="filter-chip" data-level="info">INFO</button>
+            <button class="filter-chip" data-level="warn">WARN</button>
+            <button class="filter-chip" data-level="error">ERROR</button>
+            <button class="filter-chip" data-level="debug">DEBUG</button>
+          </div>
+          <div class="terminal-actions">
+            <span class="status-label" id="logStatus" data-i18n="status.live">实时</span>
+            <button class="btn btn-sm btn-ghost" id="btnLogPause"><span data-i18n="logs.pause">暂停</span></button>
+          </div>
+        </div>
+        <div class="terminal-body" id="logBody">
+          <div class="terminal-empty" data-i18n="logs.waiting">等待日志数据...</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<div class="modal-layer" id="modalLayer">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-title" id="modalTitle" data-i18n="modal.new">新建服务商</span>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="providerForm">
+        <div class="form-group">
+          <label class="form-label" data-i18n="form.name">名称</label>
+          <input class="form-input" type="text" id="f-name" data-i18n-placeholder="form.name_placeholder" placeholder="我的服务商" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="form.type">API 类型</label>
+          <select class="form-select" id="f-type" required>
+            <option value="anthropic">ANTHROPIC</option>
+            <option value="openai-chat">OPENAI CHAT</option>
+            <option value="openai-responses">OPENAI RESPONSES</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="form.key">API 密钥</label>
+          <input class="form-input" type="password" id="f-api_key" data-i18n-placeholder="form.key_placeholder" placeholder="sk-...">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="form.url">接口地址</label>
+          <input class="form-input" type="text" id="f-base_url" data-i18n-placeholder="form.url_placeholder" placeholder="https://api.example.com">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="form.model">模型</label>
+            <input class="form-input" type="text" id="f-model" data-i18n-placeholder="form.model_placeholder" placeholder="模型名称">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="form.priority">优先级</label>
+            <input class="form-input" type="number" id="f-priority" value="1" min="0" max="100">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" id="f-enabled" checked>
+            <span class="form-check-label" data-i18n="form.enabled">启用</span>
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="btnDelete" style="display:none"><span data-i18n="modal.delete_btn">删除</span></button>
+      <button class="btn btn-ghost" id="btnCancel"><span data-i18n="btn.cancel">取消</span></button>
+      <button class="btn btn-primary" id="btnSave"><span data-i18n="btn.save">保存</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-rack" id="toastRack"></div>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

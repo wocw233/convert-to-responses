@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.db
+data.db-wal
+data.db-shm
+*.png
+logs/
+*.tgz
