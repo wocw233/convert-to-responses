@@ -12,20 +12,19 @@
 
 **Convert to responses** 是一个轻量级的 API 转译代理服务器。它接收标准的 OpenAI Responses API 格式请求（`/v1/responses`），自动将其翻译为对应 AI 服务商的原生 API 格式，并将上游响应转译回 OpenAI Responses API 格式返回给客户端。
 
-主要应用场景：让 **Codex CLI / 桌面端** 能够使用 DeepSeek、Anthropic Claude、OpenAI Chat 等不支持 Responses API 格式的服务商。
+主要应用场景：让 **Codex CLI / 桌面端** 能够使用 Anthropic Claude、OpenAI Chat 等不支持 Responses API 格式的服务商。
 
 ```
 客户端 (Codex)                    Convert to responses                  上游 API
 ─────────                        ────────────────────                  ────────
-POST /v1/responses  ──────────>  翻译为厂商原生格式  ──────────────>  DeepSeek
-  (OpenAI Responses 格式)                                          Anthropic
-                                                                   OpenAI Chat
+POST /v1/responses  ──────────>  翻译为厂商原生格式  ──────────────>  Anthropic
+  (OpenAI Responses 格式)                                          OpenAI Chat
 <── OpenAI Responses 格式  <────  转译回 Responses 格式  <──────   OpenAI Responses
 ```
 
 ## 功能特性
 
-- **多厂商适配** — 支持 DeepSeek、Anthropic、OpenAI Chat、OpenAI Responses 四种后端
+- **多厂商适配** — 支持 Anthropic、OpenAI Chat、OpenAI Responses 三种后端
 - **完整 SSE 流式支持** — 实时流式转译，支持文本输出和工具调用（function_call）增量推送
 - **Web 管理面板** — 可视化界面管理服务商配置，支持中/英文双语切换
 - **一键切换** — 随时激活不同服务商，请求自动路由到当前活动的后端
@@ -38,7 +37,6 @@ POST /v1/responses  ──────────>  翻译为厂商原生格式
 
 | 服务商 | API 类型 | 默认接口 |
 |--------|---------|---------|
-| DeepSeek | Chat Completions | `https://api.deepseek.com` |
 | Anthropic | Messages | `https://api.anthropic.com` |
 | OpenAI Chat | Chat Completions | `https://api.openai.com` |
 | OpenAI Responses | Responses（直通） | `https://api.openai.com` |
@@ -127,7 +125,6 @@ apiswitch/
 ├── sse-translator.js      # SSE 流式转译器
 ├── providers/             # 服务商适配器
 │   ├── chat-base.js       # Chat Completions 通用翻译
-│   ├── deepseek.js        # DeepSeek 适配
 │   ├── anthropic.js       # Anthropic 适配
 │   ├── openai-chat.js     # OpenAI Chat 适配
 │   └── openai-responses.js # OpenAI Responses 直通

@@ -8,7 +8,6 @@ import {
   getActiveProvider, setActiveProvider,
   addProvider, updateProvider, deleteProvider, closeDb
 } from "./db.js";
-import { handleDeepSeek } from "./providers/deepseek.js";
 import { handleAnthropic } from "./providers/anthropic.js";
 import { handleOpenAIChat } from "./providers/openai-chat.js";
 import { handleOpenAIResponses } from "./providers/openai-responses.js";
@@ -52,7 +51,6 @@ const apiRouter = express.Router();
 apiRouter.use(express.json({ limit: "10mb" }));
 
 const PROVIDER_HANDLERS = {
-  "deepseek": handleDeepSeek,
   "anthropic": handleAnthropic,
   "openai-chat": handleOpenAIChat,
   "openai-responses": handleOpenAIResponses,
@@ -90,7 +88,7 @@ apiRouter.post("/providers", (req, res) => {
   if (!name || !type || !model) {
     return res.status(400).json({ error: "缺少必要参数: name, type, model" });
   }
-  if (!["deepseek", "anthropic", "openai-chat", "openai-responses"].includes(type)) {
+  if (!["anthropic", "openai-chat", "openai-responses"].includes(type)) {
     return res.status(400).json({ error: "无效的服务商类型" });
   }
   try {

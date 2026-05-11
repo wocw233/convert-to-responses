@@ -22,7 +22,7 @@ function initSchema() {
     CREATE TABLE IF NOT EXISTS providers (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      type TEXT NOT NULL CHECK(type IN ('deepseek','anthropic','openai-chat','openai-responses')),
+      type TEXT NOT NULL CHECK(type IN ('anthropic','openai-chat','openai-responses')),
       api_key TEXT NOT NULL DEFAULT '',
       base_url TEXT NOT NULL DEFAULT '',
       model TEXT NOT NULL DEFAULT '',
@@ -42,7 +42,7 @@ function initSchema() {
   const count = db.prepare("SELECT COUNT(*) as cnt FROM providers").get();
   if (count.cnt === 0) {
     db.prepare(`INSERT INTO providers (name, type, model, enabled, priority, extra_config)
-      VALUES ('DeepSeek', 'deepseek', 'deepseek-chat', 0, 10, '{}')`).run();
+      VALUES ('Anthropic', 'anthropic', 'claude-sonnet-4-20250514', 0, 10, '{}')`).run();
   }
 }
 
